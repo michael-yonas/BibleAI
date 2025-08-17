@@ -6,7 +6,9 @@ from langchain_core.documents import Document
 from langchain_postgres import PGVector
 from langchain_huggingface import HuggingFaceEmbeddings
 from logger import (Colors, log_error, log_header, log_info, log_success, log_warning)
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def read_contents(filename: str) -> List[Document]:
     verses = []
@@ -37,7 +39,7 @@ def read_contents(filename: str) -> List[Document]:
         log_error(f"Error loading {filename}: {e}")
         return []
 
-def load_contents(verses :List[str]):
+def load_contents(verses :List[str],postgresdb):
     try:
         embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         CONNECTION_STRING = "postgresql+psycopg2://GenAI:yourpassword@localhost:5432/postgres"
@@ -55,7 +57,8 @@ def load_contents(verses :List[str]):
     except Exception as e:
         log_error(f"Error loading in embeddings: {e}")
         return -1
-
-verses=read_contents(r"C:\Michael\Projects\GenAI\Langchain\Document_Helper\kjv_Bible.txt")
+postgres=os.environ["POSTGRESDETAILS"]
+verses=read_contents(r"data\kjv_Bible.txt",postgres)
 result = load_contents(verses)
+
 print(result)
